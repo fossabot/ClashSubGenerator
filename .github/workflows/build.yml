@@ -1,9 +1,7 @@
 name: C/C++ CI
-
 on: [push]
-
 jobs:
-  build-linux:
+  linux-amd64:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -15,13 +13,15 @@ jobs:
         with:
           cmake-version: '3.16.x'
       - name: Install dependencies
-        run: sudo apt update; sudo apt install -y libssl-dev
+        run: sudo apt update; sudo apt install -y libssl-dev upx
       - name: Create build directory
         run: mkdir build
       - name: Run cmake
         run: cd build && cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/usr/bin/gcc-8 -DCMAKE_CXX_COMPILER=/usr/bin/g++-8
       - name: Build
         run: cd build && make -s -j 4
+      - name: Use UPX to compress file
+        run: upx -9 build/ClashSubGenerator
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
